@@ -1,6 +1,7 @@
 package edu.sumdu.group5.lab3.actions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -13,7 +14,6 @@ import edu.sumdu.group5.lab3.dao.DAO;
 import edu.sumdu.group5.lab3.dao.DAOFactory;
 import edu.sumdu.group5.lab3.dao.DaoException;
 import edu.sumdu.group5.lab3.dao.JdbcDAO;
-
 import edu.sumdu.group5.lab3.model.Device;
 import edu.sumdu.group5.lab3.model.ModelException;
 
@@ -56,9 +56,9 @@ public class UpdateDevicesAction implements Action {
     public String perform(HttpServletRequest request, HttpServletResponse response) {
         String deviceId = request.getParameter("id");
         if (deviceId != null) {
-            List<Device> listdPort;
-            List<Device> listdSlot;
-            List<Device> listdChildCards;
+            Collection<Device> listdPort;
+            Collection<Device> listdSlot;
+            Collection<Device> listdChildCards;
             try {
                 updateID = Integer.valueOf(deviceId);
                 HttpSession session = request.getSession(true);
@@ -74,8 +74,11 @@ public class UpdateDevicesAction implements Action {
                 }
                 listdPort = jdbcDao.getChildDevicesPorts(parentID);
                 listdSlot = jdbcDao.getChildDevicesSlots(parentID);
-                listdChildCards = getListCards(listdSlot);
+                listdChildCards = getListCards((List<Device>) listdSlot);
             } catch (ModelException e) {
+                request.getSession().setAttribute("errorMessage", e);
+                return "/error.jsp";
+            } catch (BeanException e) {
                 request.getSession().setAttribute("errorMessage", e);
                 return "/error.jsp";
             }
@@ -86,11 +89,11 @@ public class UpdateDevicesAction implements Action {
         return "/deviceList.jsp";
     }
 
-    private List<Device> getListCards(List<Device> listSlots) throws ModelException {
+    private List<Device> getListCards(List<Device> listSlots) throws ModelException, BeanException {
         List<Device> listCards = new ArrayList<Device>();
         for (Iterator<Device> i = listSlots.iterator(); i.hasNext(); ) {
             Device slot = (Device) i.next();
-            List<Device> listd = jdbcDao.getChildDevices(slot.getId());
+            Collection<Device> listd = jdbcDao.getChildDevices(slot.getId());
             for (Iterator<Device> i1 = listd.iterator(); i1.hasNext(); ) {
                 Device card = (Device) i1.next();
                 listCards.add(card);

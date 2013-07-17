@@ -12,25 +12,25 @@ import edu.sumdu.group5.lab3.model.PlaceCl;
 import edu.sumdu.group5.lab3.model.PlaceUser;
 
 public interface DAO {
-    public void add(Device device) throws ModelException;
+    public void add(Device device) throws ModelException, BeanException;
 
     public Collection findAllLocation() throws ModelException, FinderException, BeanException;
 
-    public List<Device> getAllDevice() throws ModelException;
+    public Collection<Device> getAllDevice() throws ModelException, BeanException;
 
-    public List<Device> getChildDevices(int deviceID) throws ModelException;
+    public Collection<Device> getChildDevices(int deviceID) throws ModelException, BeanException;
 
-    public List<Device> getChildDevicesPorts(int deviceID) throws ModelException;
+    public Collection<Device> getChildDevicesPorts(int deviceID) throws ModelException, BeanException;
 
-    public List<Device> getChildDevicesSlots(int deviceID) throws ModelException;
+    public Collection<Device> getChildDevicesSlots(int deviceID) throws ModelException, BeanException;
 
-    public Device getDeviceByID(int id) throws ModelException;
+    public Device getDeviceByID(int id) throws ModelException, BeanException;
 
-    public HashMap<Integer, String> getIdDevicesTypes() throws ModelException;
+    public HashMap<Integer, String> getIdDevicesTypes() throws ModelException, BeanException;
 
-    public List<Device> getRootDevicesByPlaceID(int ID) throws ModelException;
+    public Collection getRootDevicesByPlaceID(int ID) throws ModelException, BeanException, FinderException;
 
-    public void removeDevice(int deviceID) throws ModelException;
+    public void removeDevice(int deviceID) throws ModelException, BeanException;
 
-    public void update(Integer ID, String devicename) throws ModelException;
+    public void update(Integer ID, String devicename) throws ModelException, BeanException;
 }

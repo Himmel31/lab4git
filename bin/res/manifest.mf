@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Class-Path: classes javax.servlet.http; lib/junit.jar; 
-Created-By: <Tkachov Sergey>
-Main-Class: ua.edu.sumdu.j2se.tkachov.labs1.controler.Controler
-

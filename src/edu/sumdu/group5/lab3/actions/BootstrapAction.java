@@ -45,7 +45,7 @@ public class BootstrapAction implements Action {
         String placeId = request.getParameter("id");
         request.getSession().setAttribute("check", null);
         if (placeId != null) {
-            Collection listp;
+            Collection<PlaceCl> listp;
             try {
                 listp = jdbcDao.findAllLocation();
             } catch (ModelException e) {
@@ -81,10 +81,16 @@ public class BootstrapAction implements Action {
                 if (place.getId() == Integer.valueOf(placeId) && place.getLocationTypeID() == 4) {
                     HttpSession session = request.getSession(true);
                     session.setAttribute("currentPlaceDevice", place.getId());
-                    List<Device> listd;
+                    Collection<Device> listd;
                     try {
                         listd = jdbcDao.getRootDevicesByPlaceID(Integer.valueOf(place.getId()));
                     } catch (ModelException e) {
+                        request.getSession().setAttribute("errorMessage", e);
+                        return "/error.jsp";
+                    } catch (BeanException e) {
+                        request.getSession().setAttribute("errorMessage", e);
+                        return "/error.jsp";
+                    } catch (FinderException e) {
                         request.getSession().setAttribute("errorMessage", e);
                         return "/error.jsp";
                     }
@@ -105,10 +111,9 @@ public class BootstrapAction implements Action {
             request.getSession().setAttribute("navigatePlace", navigateListPlace);
             return "/placeList.jsp";
         } else {
-            Collection<PlaceCl> listp=null;
+            Collection listp = null;
             try {
                 listp = jdbcDao.findAllLocation();
-                System.out.println(listp.isEmpty()+"-------------------------------------IS EMPTY----------------");
             } catch (ModelException e) {
                 request.getSession().setAttribute("errorMessage", e);
                 return "/error.jsp";
@@ -116,13 +121,10 @@ public class BootstrapAction implements Action {
             	request.getSession().setAttribute("errorMessage", e);
                 return "/error.jsp";
 			} catch (BeanException e) {
-				e.printStackTrace();
-				//request.getSession().setAttribute("errorMessage", e);
-                //return "/error.jsp";
+				request.getSession().setAttribute("errorMessage", e);
+                return "/error.jsp";
 			}
             TreeSet<PlaceCl> idListPlace = new TreeSet<PlaceCl>();
-            System.out.println(listp.size()+"<<<<< list p size");
-            System.out.println(listp.getClass().toString()+"<<<<< list p name(2)");
 
             for (Iterator<PlaceCl> i = listp.iterator(); i.hasNext(); ) {
                 PlaceCl place = i.next();

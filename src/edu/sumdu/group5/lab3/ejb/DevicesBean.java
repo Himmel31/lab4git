@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -15,13 +15,10 @@ import javax.ejb.EntityBean;
 import javax.ejb.EntityContext;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
-import javax.sql.DataSource;
 
 import edu.sumdu.group5.lab3.dao.ConnectionException;
 import edu.sumdu.group5.lab3.dao.ConnectionFactory;
 import edu.sumdu.group5.lab3.dao.DaoException;
-import edu.sumdu.group5.lab3.model.Device;
-import edu.sumdu.group5.lab3.model.ModelException;
 
 public class DevicesBean implements EntityBean{
 	
@@ -93,7 +90,7 @@ public class DevicesBean implements EntityBean{
             ptmt.setString(1, String.valueOf(id));
             rs = ptmt.executeQuery();
             while (rs.next()) {
-                devices.add(new Long(rs.getInt("id_device")));
+                devices.add(rs.getLong("id_device"));
             }
 
         } catch (SQLException e) {
@@ -117,20 +114,20 @@ public class DevicesBean implements EntityBean{
 
      }
     
-    public Long ejbCreate() throws CreateException{
+    public Long ejbCreate(String devName, Long devTypeId, Long parentId, Long placeId) throws CreateException{
         try {
             String querystring = "INSERT INTO devices VALUES(?,?,?,?,?)";
             con = getConnection();
             ptmt = con.prepareStatement(querystring, PreparedStatement.RETURN_GENERATED_KEYS);
             ptmt.setString(1, null);
-            ptmt.setString(2, getDevName());
-            ptmt.setLong(3, getDeviceTypeID());
+            ptmt.setString(2, devName);
+            ptmt.setLong(3, devTypeId);
             if (getParentID() != 0) {
-                ptmt.setLong(4, getParentID());
+                ptmt.setLong(4, parentId);
             } else {
                 ptmt.setString(4, null);
             }
-            ptmt.setLong(5, getPlaceID());
+            ptmt.setLong(5, placeId);
             ptmt.executeUpdate();
             return getId();
         } catch (SQLException e) {
@@ -179,10 +176,10 @@ public class DevicesBean implements EntityBean{
 
 
 	        } catch (SQLException e) {
-	            throw new EJBException("Couldn't execute query");
+	            throw new EJBException("Couldn't execute query SQL");
 	        }
 	        catch (DaoException e) {
-	            throw new EJBException("Couldn't execute queryDAO");
+	            throw new EJBException("Couldn't execute query DAO");
 	        }finally {
 	        	try{
 	                if (rs != null)
@@ -204,19 +201,254 @@ public class DevicesBean implements EntityBean{
 	    id = null;
 	}
 
-	@Override
-	public void ejbRemove() throws RemoveException, EJBException,
-			RemoteException {
-		// TODO Auto-generated method stub
+	public void ejbRemove(long id) throws RemoveException, RemoteException {
+	    try {
+            String querystring = "DELETE FROM devices WHERE id_device=? or id_parent=?";
+            con = getConnection();
+            ptmt = con.prepareStatement(querystring);
+            ptmt.setString(1, String.valueOf(id));
+            ptmt.setString(2, String.valueOf(id));
+            ptmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RemoveException("Can't remove device, SQL exception");
+        } catch (DaoException e) {
+            throw new RemoveException("Can't remove device, DAO exception");
+        } finally {
+            try {
+                if (rs != null)
+                    rs.close();
+                if (ptmt != null)
+                    ptmt.close();
+                closeConnection();
+            } catch (SQLException e) {
+                throw new RemoveException("Can't remove device, SQL exception");
+            } catch (ConnectionException e) {
+                throw new RemoveException("Can't remove device, Connection exception");
+            }
+        }
 		
 	}
 
 	@Override
 	public void ejbStore() throws EJBException, RemoteException {
-		// TODO Auto-generated method stub
-		
+	    try {
+            String querystring = "UPDATE devices SET device_name=? WHERE id_device=?;";
+            con = getConnection();
+            ptmt = con.prepareStatement(querystring);
+            ptmt.setString(1, devName);
+            ptmt.setLong(2, id);
+            ptmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new EJBException("Can't store device", e);
+        } catch (DaoException e) {
+            throw new EJBException("Can't store device", e);
+        }finally {
+            try {
+                if (rs != null)
+                    rs.close();
+                if (ptmt != null)
+                    ptmt.close();                
+                closeConnection();
+            } catch (SQLException e) {
+                throw new EJBException("Can't store device", e);
+            } catch (ConnectionException e) {
+                throw new EJBException("Can't store device", e);
+            }
+        }
 	}
 
+	public HashMap<Integer, String> ejbGetIdDevicesTypes() throws RemoteException {
+        HashMap<Integer, String> deviceTypeMap = new HashMap<Integer, String>();
+        try {
+            String querystring = "SELECT * FROM device_type";
+            con = getConnection();
+            ptmt = con.prepareStatement(querystring);
+            rs = ptmt.executeQuery();
+
+            while (rs.next()) {
+                Integer deviceTypeID = rs.getInt("id_device_type");
+                String deviceName = rs.getString("device_name");
+                deviceTypeMap.put(deviceTypeID, deviceName);
+            }
+
+        } catch (SQLException e) {
+            throw new RemoteException("SQL exception");
+        } catch (DaoException e) {
+            throw new RemoteException("DAO exception");
+        } finally {
+            try {
+                if (rs != null)
+                    rs.close();
+                if (ptmt != null)
+                    ptmt.close();                 
+                closeConnection();
+            } catch (SQLException e) {
+                throw new RemoteException("SQL exception");
+            } catch (ConnectionException e) {
+                throw new RemoteException("Connection exception");
+            }
+        }
+        return deviceTypeMap;
+    }
+	
+	public Collection ejbFindAllDevices() throws RemoteException, FinderException {
+	    Collection devices = new ArrayList();
+        try {
+            String querystring = "SELECT * FROM devices";
+            con = getConnection();
+            ptmt = con.prepareStatement(querystring);
+            rs = ptmt.executeQuery();
+            while (rs.next()) {
+                devices.add(rs.getLong("id_device"));
+            }
+        } catch (SQLException e) {
+            throw new FinderException("Can't find all devices, SQL exception");
+        } catch (DaoException e) {
+            throw new FinderException("Can't find all devices, DAO exception");
+        } finally {
+            try {
+                if (rs != null)
+                    rs.close();
+                if (ptmt != null)
+                    ptmt.close();                 
+                closeConnection();
+            } catch (SQLException e) {
+                throw new FinderException("Can't find all devices, SQL exception");
+            } catch (ConnectionException e) {
+                throw new FinderException("Can't find all devices, Connection exception");
+            }
+        }
+        return devices;
+	}
+	
+	public Collection ejbFindChildDevices(int deviceId) throws RemoteException, FinderException {
+	    Collection devices = new ArrayList();
+        try {
+            String querystring = "SELECT * FROM devices where id_parent=?";
+            con = getConnection();
+            ptmt = con.prepareStatement(querystring);
+            ptmt.setString(1, String.valueOf(deviceId));
+            rs = ptmt.executeQuery();
+
+            while (rs.next()) {
+                devices.add(rs.getLong("id_device"));
+            }
+
+        } catch (SQLException e) {
+            throw new FinderException("Can't find child devices, SQL exception");
+        } catch (DaoException e) {
+            throw new FinderException("Can't find child devices, DAO exception");
+        } finally {
+            try {
+                if (rs != null)
+                    rs.close();
+                if (ptmt != null)
+                    ptmt.close();             
+                closeConnection();
+            } catch (SQLException e) {
+                throw new FinderException("Can't find child devices, SQL exception");
+            } catch (ConnectionException e) {
+                throw new FinderException("Can't find child devices, Connection exception");
+            }
+        }
+        return devices;
+	}
+	
+	public Collection ejbFindChildDevicesSlots(int deviceId) throws RemoteException, FinderException {
+        Collection devices = new ArrayList();
+        try {
+            String querystring = "SELECT * FROM devices where id_parent=? AND id_device_type=2";
+            con = getConnection();
+            ptmt = con.prepareStatement(querystring);
+            ptmt.setString(1, String.valueOf(deviceId));
+            rs = ptmt.executeQuery();
+
+            while (rs.next()) {
+                devices.add(rs.getLong("id_device"));
+            }
+
+        } catch (SQLException e) {
+            throw new FinderException("Can't find child devices slots, SQL exception");
+        } catch (DaoException e) {
+            throw new FinderException("Can't find child devices slots, DAO exception");
+        } finally {
+            try {
+                if (rs != null)
+                    rs.close();
+                if (ptmt != null)
+                    ptmt.close();             
+                closeConnection();
+            } catch (SQLException e) {
+                throw new FinderException("Can't find child devices slots, SQL exception");
+            } catch (ConnectionException e) {
+                throw new FinderException("Can't find child devices slots, Connection exception");
+            }
+        }
+        return devices;
+    }
+	
+	public Collection ejbFindChildDevicesPorts(int deviceId) throws RemoteException, FinderException {
+        Collection devices = new ArrayList();
+        try {
+            String querystring = "SELECT * FROM devices where id_parent=? AND id_device_type=4";
+            con = getConnection();
+            ptmt = con.prepareStatement(querystring);
+            ptmt.setString(1, String.valueOf(deviceId));
+            rs = ptmt.executeQuery();
+
+            while (rs.next()) {
+                devices.add(rs.getLong("id_device"));
+            }
+
+        } catch (SQLException e) {
+            throw new FinderException("Can't find child devices slots, SQL exception");
+        } catch (DaoException e) {
+            throw new FinderException("Can't find child devices slots, DAO exception");
+        } finally {
+            try {
+                if (rs != null)
+                    rs.close();
+                if (ptmt != null)
+                    ptmt.close();             
+                closeConnection();
+            } catch (SQLException e) {
+                throw new FinderException("Can't find child devices slots, SQL exception");
+            } catch (ConnectionException e) {
+                throw new FinderException("Can't find child devices slots, Connection exception");
+            }
+        }
+        return devices;
+    }
+	
+	public void ejbUpdate (Integer IdDevice, String deviceName) throws RemoteException {
+	    try {
+            String querystring = "UPDATE devices SET device_name=? WHERE id_device=?;";
+            con = getConnection();
+            ptmt = con.prepareStatement(querystring);
+            ptmt.setString(1, deviceName);
+            ptmt.setInt(2, IdDevice);
+            ptmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RemoteException("Can't update device, SQL exception");
+        } catch (DaoException e) {
+            throw new RemoteException("Can't update device, DAO exception");
+        }finally {
+            try {
+                if (rs != null)
+                    rs.close();
+                if (ptmt != null)
+                    ptmt.close();                
+                closeConnection();
+            } catch (SQLException e) {
+                throw new RemoteException("Can't update device, SQL exception");
+            } catch (ConnectionException e) {
+                throw new RemoteException("Can't update device, Connection exception");
+            }
+        }
+	}
+	
 	@Override
 	public void setEntityContext(EntityContext arg0) throws EJBException,
 			RemoteException {
@@ -259,5 +491,34 @@ public class DevicesBean implements EntityBean{
                 throw new FinderException("Can't find Device by ID " + id + ". Connection exception");
             }
         }
+    }
+
+    @Override
+    public void ejbRemove() throws RemoveException, EJBException,
+            RemoteException {
+        try {
+            String querystring = "DELETE FROM devices WHERE id_device=";
+            con = getConnection();
+            ptmt = con.prepareStatement(querystring);
+            ptmt.setString(1, id.toString());
+            ptmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RemoveException("Can't remove device, SQL exception");
+        } catch (DaoException e) {
+            throw new RemoveException("Can't remove device, DAO exception");
+        } finally {
+            try {
+                if (rs != null)
+                    rs.close();
+                if (ptmt != null)
+                    ptmt.close();
+                closeConnection();
+            } catch (SQLException e) {
+                throw new RemoveException("Can't remove device, SQL exception");
+            } catch (ConnectionException e) {
+                throw new RemoveException("Can't remove device, Connection exception");
+            }
+        }
+        
     }
 }

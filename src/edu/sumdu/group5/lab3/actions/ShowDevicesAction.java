@@ -1,6 +1,7 @@
 package edu.sumdu.group5.lab3.actions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -10,7 +11,6 @@ import javax.servlet.http.HttpSession;
 
 import edu.sumdu.group5.lab3.model.Device;
 import edu.sumdu.group5.lab3.model.ModelException;
-
 import edu.sumdu.group5.lab3.dao.BeanException;
 import edu.sumdu.group5.lab3.dao.DAO;
 import edu.sumdu.group5.lab3.dao.DAOFactory;
@@ -46,29 +46,31 @@ public class ShowDevicesAction implements Action {
         String currentNameDevice = null;
         try {
             currentNameDevice = jdbcDao.getDeviceByID(Integer.valueOf(deviceId)).getDevName();
-        } catch (ModelException e1) {
-            request.getSession().setAttribute("errorMessage", e1);
-            return "/error.jsp";
-        }
+        
         session.setAttribute("currentRootDeviceID", deviceId);
         session.setAttribute("currentRootDeviceName", currentNameDevice);
         if (deviceId != null) {
-            List<Device> listdSlot;
-            List<Device> listdPort;
-            List<Device> listdChildCards = new ArrayList<Device>();
-            try {
-
-                listdPort = jdbcDao.getChildDevicesPorts(Integer.valueOf(deviceId));
-                listdSlot = jdbcDao.getChildDevicesSlots(Integer.valueOf(deviceId));
-                listdChildCards = getListCards(listdSlot);
-            } catch (ModelException e) {
-                request.getSession().setAttribute("errorMessage", e);
-                return "/error.jsp";
-            }
+            Collection<Device> listdSlot;
+            Collection<Device> listdPort;
+            Collection<Device> listdChildCards = new ArrayList<Device>();
+            listdPort = jdbcDao.getChildDevicesPorts(Integer.valueOf(deviceId));
+            listdSlot = jdbcDao.getChildDevicesSlots(Integer.valueOf(deviceId));
+            listdChildCards = getListCards((List<Device>) listdSlot);
             request.getSession().setAttribute("devicesChildCards", listdChildCards);
             request.getSession().setAttribute("devicesSlot", listdSlot);
             request.getSession().setAttribute("devicesPort", listdPort);
         }
+        } catch (ModelException e1) {
+            request.getSession().setAttribute("errorMessage", e1);
+            return "/error.jsp";
+        } catch (NumberFormatException e) {
+            request.getSession().setAttribute("errorMessage", e);
+            return "/error.jsp";
+        } catch (BeanException e) {
+            request.getSession().setAttribute("errorMessage", e);
+            return "/error.jsp";
+        }
+        
         return "/deviceList.jsp";
     }
 
@@ -76,12 +78,13 @@ public class ShowDevicesAction implements Action {
      * Gets list of cards based on the list of slots, in which this cards inserted
      *
      * @return list of cards
+     * @throws BeanException 
      */
-    private List<Device> getListCards(List<Device> listSlots) throws ModelException {
+    private List<Device> getListCards(List<Device> listSlots) throws ModelException, BeanException {
         List<Device> listCards = new ArrayList<Device>();
         for (Iterator<Device> i = listSlots.iterator(); i.hasNext(); ) {
             Device slot = (Device) i.next();
-            List<Device> listd = jdbcDao.getChildDevices(slot.getId());
+            Collection<Device> listd = jdbcDao.getChildDevices(slot.getId());
             for (Iterator<Device> i1 = listd.iterator(); i1.hasNext(); ) {
                 Device card = (Device) i1.next();
                 listCards.add(card);

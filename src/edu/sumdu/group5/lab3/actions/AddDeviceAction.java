@@ -2,10 +2,12 @@ package edu.sumdu.group5.lab3.actions;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.ejb.FinderException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -42,28 +44,28 @@ public class AddDeviceAction implements Action {
      * Processing the request data from client and sets session attributes based on the request parameters
      */
     public String perform(HttpServletRequest request, HttpServletResponse response) {
-        List<Device> listdPort = null;
-        List<Device> listdSlot = null;
-        List<Device> listdChildCards = null;
+        Collection<Device> listdPort = null;
+        Collection<Device> listdSlot = null;
+        Collection<Device> listdChildCards = null;
         Device newDevice = null;
         String str = request.getParameter(TYPE).toString();
 
         if (str.equals("router")) {
-
+            Collection listd;
             try {
                 newDevice = createDevice(request);
-                jdbcDao.add(newDevice);
-            } catch (ModelException e1) {
-                request.getSession().setAttribute("errorMessage", e1);
-                return "/error.jsp";
-            }
-            HttpSession session = request.getSession(true);
-            int placeID = Integer.valueOf(session.getAttribute("currentPlaceDevice").toString());
-            session.setAttribute("currentPlaceDevice", placeID);
-            List<Device> listd;
-            try {
+                jdbcDao.add(newDevice);            
+                HttpSession session = request.getSession(true);
+                int placeID = Integer.valueOf(session.getAttribute("currentPlaceDevice").toString());
+                session.setAttribute("currentPlaceDevice", placeID);
                 listd = jdbcDao.getRootDevicesByPlaceID(Integer.valueOf(placeID));
             } catch (ModelException e) {
+                request.getSession().setAttribute("errorMessage", e);
+                return "/error.jsp";
+            } catch (BeanException e) {
+                request.getSession().setAttribute("errorMessage", e);
+                return "/error.jsp";
+            } catch (FinderException e) {
                 request.getSession().setAttribute("errorMessage", e);
                 return "/error.jsp";
             }
@@ -76,23 +78,16 @@ public class AddDeviceAction implements Action {
 
             try {
                 newDevice = createDevice(request);
-            } catch (ModelException e1) {
-                request.getSession().setAttribute("errorMessage", e1);
-                return "/error.jsp";
-            }
-            try {
                 jdbcDao.add(newDevice);
-            } catch (ModelException e1) {
-                request.getSession().setAttribute("errorMessage", e1);
-                return "/error.jsp";
-            }
-            try {
                 HttpSession session = request.getSession(true);
                 int parentID = Integer.valueOf(session.getAttribute("currentRootDeviceID").toString());
                 listdPort = jdbcDao.getChildDevicesPorts(parentID);
                 listdSlot = jdbcDao.getChildDevicesSlots(parentID);
-                listdChildCards = getListCards(listdSlot);
+                listdChildCards = getListCards((List<Device>) listdSlot);
             } catch (ModelException e) {
+                request.getSession().setAttribute("errorMessage", e);
+                return "/error.jsp";
+            } catch (BeanException e) {
                 request.getSession().setAttribute("errorMessage", e);
                 return "/error.jsp";
             }
@@ -108,8 +103,9 @@ public class AddDeviceAction implements Action {
      * Adds new object of the Device type
      *
      * @return created device is returning
+     * @throws BeanException 
      */
-    private Device createDevice(HttpServletRequest request) throws ModelException {
+    private Device createDevice(HttpServletRequest request) throws ModelException, BeanException {
         HashMap<Integer, String> map = jdbcDao.getIdDevicesTypes();
         HttpSession session = request.getSession(true);
         int placeID = Integer.valueOf(session.getAttribute("currentPlaceDevice").toString());
@@ -171,12 +167,13 @@ public class AddDeviceAction implements Action {
      * Gets list of cards based on the list of slots, in which this cards inserted
      *
      * @return list of cards
+     * @throws BeanException 
      */
-    private List<Device> getListCards(List<Device> listSlots) throws ModelException {
+    private List<Device> getListCards(List<Device> listSlots) throws ModelException, BeanException {
         List<Device> listCards = new ArrayList<Device>();
         for (Iterator<Device> i = listSlots.iterator(); i.hasNext(); ) {
             Device slot = (Device) i.next();
-            List<Device> listd = jdbcDao.getChildDevices(slot.getId());
+            Collection listd = jdbcDao.getChildDevices(slot.getId());
             for (Iterator<Device> i1 = listd.iterator(); i1.hasNext(); ) {
                 Device card = (Device) i1.next();
                 listCards.add(card);

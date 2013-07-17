@@ -7,8 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -75,9 +73,9 @@ public class PlacesBean implements EntityBean{
             }
             return col;
         } catch (SQLException e) {
-            throw new FinderException("Couldn't execute querySQL");
+            throw new FinderException("Couldn't execute querySQL " + e.getLocalizedMessage());
         } catch (DaoException e) {
-        	throw new FinderException("Couldn't execute queryDAO");
+        	throw new FinderException("Couldn't execute queryDAO " + e.getLocalizedMessage());
         }
         finally {
         	try{
