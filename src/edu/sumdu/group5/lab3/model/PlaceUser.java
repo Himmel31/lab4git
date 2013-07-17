@@ -11,7 +11,7 @@ import java.util.Collection;
 
 public class PlaceUser {
 
-    protected Collection placeList = new ArrayList<Place>();
+    protected Collection placeList = new ArrayList<PlaceCl>();
 
     public PlaceUser() {
     }
@@ -20,25 +20,25 @@ public class PlaceUser {
         return !placeList.isEmpty();
     }
 
-    public void addPlace(Place aPlace) {
+    public void addPlace(PlaceCl aPlace) {
         placeList.add(aPlace);
     }
 
-    public void removePlace(Place aPlace) {
+    public void removePlace(PlaceCl aPlace) {
         placeList.remove(aPlace);
     }
 
     public void removePlace(int id) {
-        Place toRemove = findPlace(id);
+        PlaceCl toRemove = findPlace(id);
         placeList.remove(toRemove);
     }
 
-    public Place findPlace(int id) {
-        Place found = null;
+    public PlaceCl findPlace(int id) {
+        PlaceCl found = null;
 
-        Iterator<Place> iterator = placeList.iterator();
+        Iterator<PlaceCl> iterator = placeList.iterator();
         while (iterator.hasNext()) {
-            Place current = (Place) iterator.next();
+            PlaceCl current = (PlaceCl) iterator.next();
             if (current.getId() == id)
                 found = current;
         }

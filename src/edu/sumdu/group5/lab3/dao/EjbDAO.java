@@ -14,72 +14,91 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.rmi.PortableRemoteObject;
 
+import edu.sumdu.group5.lab3.ejb.DevicesHome;
+import edu.sumdu.group5.lab3.ejb.DevicesRemote;
 import edu.sumdu.group5.lab3.ejb.PlacesHome;
 import edu.sumdu.group5.lab3.ejb.PlacesRemote;
-import edu.sumdu.group5.lab3.ejb.ConvertFromRemoteToPlace;
 import edu.sumdu.group5.lab3.model.Device;
 import edu.sumdu.group5.lab3.model.ModelException;
-import edu.sumdu.group5.lab3.model.Place;
+import edu.sumdu.group5.lab3.model.PlaceCl;
 
 public class EjbDAO implements DAO {
 
 	InitialContext in = null;
 	Properties prop = null;
-	Collection placesR = null;
-    Place pl;
+	PlacesHome placesH;
+	DevicesHome devicesH;
+
+	edu.sumdu.group5.lab3.model.PlaceCl pl;
 	
-    public EjbDAO(){
+    public EjbDAO()  {
+    }
+
+	public Collection<PlaceCl> getLocationList(Collection<PlacesRemote> plRemote) throws BeanException {
+	   
+		Collection<PlaceCl> res = new LinkedList();
+        try {
+            for (PlacesRemote dr : plRemote) {
+            	PlaceCl d = new PlaceCl();
+                d.setName(dr.getName());
+                d.setLocationTypeID(dr.getLocationTypeID());
+                d.setId(dr.getId().intValue());
+                d.setParentID(dr.getParentID().intValue());
+                
+                res.add(d);
+            }
+        } catch (java.rmi.RemoteException e) {
+          
+            throw new BeanException(e);
+        }
+        return res;
+    }
+	
+	public Collection<Device> getRootDevicesByPlaceIDBusinesMethod(Collection<DevicesRemote> devRemote) throws BeanException {
+		   
+		Collection<Device> res = new LinkedList();
+        try {
+            for (PlacesRemote dr : devRemote) {
+            	Device d = new Device();
+                d.setDevName(dr.getDevName());
+                d.setDeviceTypeID(dr.getDeviceTypeID.intValue());
+                d.setId(dr.getId().intValue());
+                d.setParentID(dr.getParentID().intValue());
+                d.setPlaceID(dr.PlaceID.intValue());
+                res.add(d);
+            }
+        } catch (java.rmi.RemoteException e) {
+          
+            throw new BeanException(e);
+        }
+        return res;
     }
 	
 	@Override
 	public void add(Device device) throws ModelException {
-		/*try {
-			in = new InitialContext(prop);
-			Object obj =  in.lookup("/PlacesBean");
-			PlacesHome placesH   = (PlacesHome) PortableRemoteObject.narrow(obj,PlacesHome.class);
-			PlacesRemote PlacesR = placesH.create();
-		} catch (NamingException e) {
-			throw new BeanException (e);
-		}catch (RemoteException e) {
-			throw new BeanException (e);
-		}catch (CreateException e) {
-			throw new BeanException (e);
-		}*/
-		
+	
 	}  
-
+	
 	@Override
-	public Collection findAllLocation() throws ModelException, FinderException, BeanException {
-        Collection places;
+	public Collection<PlaceCl> findAllLocation() throws ModelException, FinderException, BeanException {
+		
 		try {
-			Properties properties = new Properties();
-			properties.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.jnp.interfaces.NamingContextFactory");
-			properties.setProperty(Context.URL_PKG_PREFIXES, "org.jboss.naming:org.jnp.interfaces");
-			properties.setProperty(Context.PROVIDER_URL, "localhost:1099");
-			
-			in = new InitialContext(properties);
-			Object obj =  in.lookup("PlacesEJB");
-			PlacesHome placesH   = (PlacesHome) PortableRemoteObject.narrow(obj,PlacesHome.class);
-			placesR = placesH.findAllLocation();
-            places=ConvertFromRemoteToPlace.convert(placesR);
-            
-            //System.out.println("YEAAAHHHHH!!!!!!!!-- "+placesR.get(2).getName()+"------- ");
-           /* for (Iterator it=placesR.iterator();it.hasNext();) {
-                PlacesRemote pr= (PlacesRemote) it.next();
-                //pl = pr.getPlace();
-                System.out.println("YEAAAHHHHH!!!!!!!!REMOTE-- "+pr.getName()+"------- ");
-                System.out.println("YEAAAHHHHH!!!!!!!!-- "+pl.getName()+"------- ");
-                places.add(pl);
-                System.out.println("PLACES SIZE LIST IS!!!!!!!!-- "+places.size()+"------- ");
-            } */
+		   	   Properties properties = new Properties();
+		   	   properties.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.jnp.interfaces.NamingContextFactory");
+		   	   properties.setProperty(Context.URL_PKG_PREFIXES, "org.jboss.naming:org.jnp.interfaces");
+		   	   properties.setProperty(Context.PROVIDER_URL, "localhost:1099");
+				
+		   	   in = new InitialContext(properties);
+		   	   Object obj =  in.lookup("PlacesEJB");
+		   	   placesH   = (PlacesHome) PortableRemoteObject.narrow(obj,PlacesHome.class);
+
+			   return getLocationList(placesH.findAllLocation());	
+                   
         } catch (NamingException e) {
-			e.printStackTrace();
-			throw new BeanException (e);
+        	throw new BeanException (e);
 		}catch (RemoteException e) {
 			throw new BeanException (e);
 		}
-
-		return places;
 	}
 
 	@Override
@@ -121,9 +140,24 @@ public class EjbDAO implements DAO {
 	}
 
 	@Override
-	public List<Device> getRootDevicesByPlaceID(int ID) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+	public Collection<Device> getRootDevicesByPlaceID(int ID) throws ModelException {
+		try {
+		   	   Properties properties = new Properties();
+		   	   properties.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.jnp.interfaces.NamingContextFactory");
+		   	   properties.setProperty(Context.URL_PKG_PREFIXES, "org.jboss.naming:org.jnp.interfaces");
+		   	   properties.setProperty(Context.PROVIDER_URL, "localhost:1099");
+				
+		   	   in = new InitialContext(properties);
+		   	   Object obj =  in.lookup("DevicesEJB");
+		   	   devicesH   = (DevicesHome) PortableRemoteObject.narrow(obj,DevicesHome.class);
+
+			   return getRootDevicesByPlaceIDBusinesMethod(devicesH.findRootDevicesByPlaceID(new Long(ID)));	
+                
+     } catch (NamingException e) {
+     	throw new BeanException (e);
+		}catch (RemoteException e) {
+			throw new BeanException (e);
+		}
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import edu.sumdu.group5.lab3.model.Device;
 import edu.sumdu.group5.lab3.model.ModelException;
 
+import edu.sumdu.group5.lab3.dao.BeanException;
 import edu.sumdu.group5.lab3.dao.DAO;
 import edu.sumdu.group5.lab3.dao.DAOFactory;
 import edu.sumdu.group5.lab3.dao.DaoException;

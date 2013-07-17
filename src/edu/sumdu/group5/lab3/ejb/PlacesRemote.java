@@ -1,6 +1,6 @@
 package edu.sumdu.group5.lab3.ejb;
 
-import edu.sumdu.group5.lab3.model.Place;
+import edu.sumdu.group5.lab3.model.PlaceCl;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -10,7 +10,6 @@ import javax.ejb.FinderException;
 import javax.sql.DataSource;
 
 public interface PlacesRemote extends EJBObject{
-
 
     public int getLocationTypeID() throws RemoteException;
 
@@ -27,7 +26,5 @@ public interface PlacesRemote extends EJBObject{
     public Long getId() throws RemoteException;
 
     public Long getParentID() throws RemoteException;
-
-    public String toString_() throws RemoteException;
 
 }

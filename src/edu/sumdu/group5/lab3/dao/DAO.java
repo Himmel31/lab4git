@@ -8,7 +8,7 @@ import javax.ejb.FinderException;
 
 import edu.sumdu.group5.lab3.model.Device;
 import edu.sumdu.group5.lab3.model.ModelException;
-import edu.sumdu.group5.lab3.model.Place;
+import edu.sumdu.group5.lab3.model.PlaceCl;
 import edu.sumdu.group5.lab3.model.PlaceUser;
 
 public interface DAO {

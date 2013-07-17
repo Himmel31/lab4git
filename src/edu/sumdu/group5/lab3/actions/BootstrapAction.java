@@ -16,7 +16,7 @@ import edu.sumdu.group5.lab3.dao.JdbcDAO;
 
 import edu.sumdu.group5.lab3.model.Device;
 import edu.sumdu.group5.lab3.model.ModelException;
-import edu.sumdu.group5.lab3.model.Place;
+import edu.sumdu.group5.lab3.model.PlaceCl;
 import edu.sumdu.group5.lab3.model.PlaceUser;
 
 /**
@@ -58,11 +58,11 @@ public class BootstrapAction implements Action {
 				request.getSession().setAttribute("errorMessage", e);
                 return "/error.jsp";
 			}
-            LinkedList<Place> navigateListPlace = new LinkedList<Place>();
+            LinkedList<PlaceCl> navigateListPlace = new LinkedList<PlaceCl>();
 
             PlaceUser pl = new PlaceUser();
             pl.setPlaces(listp);
-            Place place1 = pl.findPlace(Integer.valueOf(placeId));
+            PlaceCl place1 = pl.findPlace(Integer.valueOf(placeId));
             if (place1.getParentID() == 0) {
                 navigateListPlace.addFirst(place1);
             } else {
@@ -73,10 +73,10 @@ public class BootstrapAction implements Action {
                 }
             }
 
-            TreeSet<Place> idListPlace = new TreeSet<Place>();
+            TreeSet<PlaceCl> idListPlace = new TreeSet<PlaceCl>();
 
-            for (Iterator<Place> i = listp.iterator(); i.hasNext(); ) {
-                Place place = (Place) i.next();
+            for (Iterator<PlaceCl> i = listp.iterator(); i.hasNext(); ) {
+                PlaceCl place = (PlaceCl) i.next();
 
                 if (place.getId() == Integer.valueOf(placeId) && place.getLocationTypeID() == 4) {
                     HttpSession session = request.getSession(true);
@@ -105,7 +105,7 @@ public class BootstrapAction implements Action {
             request.getSession().setAttribute("navigatePlace", navigateListPlace);
             return "/placeList.jsp";
         } else {
-            Collection listp;
+            Collection<PlaceCl> listp=null;
             try {
                 listp = jdbcDao.findAllLocation();
                 System.out.println(listp.isEmpty()+"-------------------------------------IS EMPTY----------------");
@@ -116,17 +116,18 @@ public class BootstrapAction implements Action {
             	request.getSession().setAttribute("errorMessage", e);
                 return "/error.jsp";
 			} catch (BeanException e) {
-				request.getSession().setAttribute("errorMessage", e);
-                return "/error.jsp";
+				e.printStackTrace();
+				//request.getSession().setAttribute("errorMessage", e);
+                //return "/error.jsp";
 			}
-            TreeSet<Place> idListPlace = new TreeSet<Place>();
+            TreeSet<PlaceCl> idListPlace = new TreeSet<PlaceCl>();
             System.out.println(listp.size()+"<<<<< list p size");
             System.out.println(listp.getClass().toString()+"<<<<< list p name(2)");
 
-            for (Iterator<Place> i = listp.iterator(); i.hasNext(); ) {
-                Place place = i.next();
-                if (place.getParentID() == 0) {
-                    idListPlace.add(place);
+            for (Iterator<PlaceCl> i = listp.iterator(); i.hasNext(); ) {
+                PlaceCl place = i.next();
+               if (place.getParentID() == 0) {
+                   idListPlace.add(place);
                 }
             }
             request.getSession().setAttribute("places", idListPlace);

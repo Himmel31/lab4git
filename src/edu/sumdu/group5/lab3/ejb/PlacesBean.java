@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,7 +21,7 @@ import javax.sql.DataSource;
 import edu.sumdu.group5.lab3.dao.ConnectionException;
 import edu.sumdu.group5.lab3.dao.ConnectionFactory;
 import edu.sumdu.group5.lab3.dao.DaoException;
-import edu.sumdu.group5.lab3.model.Place;
+import edu.sumdu.group5.lab3.model.PlaceCl;
 
 
 public class PlacesBean implements EntityBean{
@@ -31,10 +32,10 @@ public class PlacesBean implements EntityBean{
 	private int locationTypeID;
     private EntityContext context;
 	private Connection con=null;
-	PreparedStatement ptmt = null;
-    ResultSet rs = null;
+	private PreparedStatement ptmt = null;
+    private ResultSet rs = null;
     private DataSource ds = null;
-    private Place pl;
+    private PlaceCl pl;
 
 
     private Connection getConnection() throws DaoException {
@@ -46,12 +47,7 @@ public class PlacesBean implements EntityBean{
         ConnectionFactory.closeConnection();
     }
     
-    public Long ejbCreate() throws CreateException{
-    	return getId();
-    }
     
-    public void ejbPostCreate() throws CreateException{
-    }
 
     private DataSource getDs(){
         if (ds==null)
@@ -59,38 +55,29 @@ public class PlacesBean implements EntityBean{
         return ds;
     }
 
-    public Place getPlace() {
+    public PlaceCl getPlace() {
         return pl;
     }
+    
     public Collection ejbFindAllLocation() throws FinderException{
  
-        Collection places = new LinkedList<Place>();
+    	@SuppressWarnings("rawtypes")
+		Collection col = new ArrayList();
         try {
             String querystring = "SELECT * FROM places";
-            DataSource ds = getDs();
-            if(ds == null)
-            {
-                System.err.println();
-                System.err.println("=========DATASOURCE IS NULL!!!!!===============");
-                System.out.println();
-                System.out.println("=========DATASOURCE IS NULL!!!!!===============");
-            }
-            //con = ds.getConnection();
+           
             con = getConnection();
             ptmt = con.prepareStatement(querystring);
             rs = ptmt.executeQuery();
+          
             while (rs.next()) {
-                Integer id = rs.getInt("id_place");
-                name = rs.getString("place_name");
-                locationTypeID = rs.getInt("id_location_type");
-                Integer parentID = rs.getInt("id_parent");
-                Place pl = new Place(id, name, locationTypeID, parentID);
-                places.add(pl);
+                col.add(new Long(rs.getInt("id_place")));
             }
+            return col;
         } catch (SQLException e) {
             throw new FinderException("Couldn't execute querySQL");
         } catch (DaoException e) {
-            throw new FinderException("Couldn't execute queryDAO");
+        	throw new FinderException("Couldn't execute queryDAO");
         }
         finally {
         	try{
@@ -105,25 +92,19 @@ public class PlacesBean implements EntityBean{
         		throw new FinderException("");
         	}
         }
-        for (int i = 0; i < places.size();i++ ) {
 
-                //System.out.println("EJB_FIND_ALL!!!!!!!!-- "+places.get(i).getName()+"------- ");                
-            }
-        return places;
     }
     
     public Long ejbFindByPrimaryKey(Long id) throws FinderException {
     	if (id == null) {
             throw new FinderException("Primary key cannot be null");
         }
-        Connection con = null;
-        PreparedStatement prepStmt = null;
-        ResultSet rs = null;
+      
         try {
             
-            prepStmt = con.prepareStatement("SELECT * from places where id_place=?");
-            prepStmt.setInt(1, id.intValue());
-            rs = prepStmt.executeQuery();
+            ptmt = con.prepareStatement("SELECT * from places where id_place=?");
+            ptmt.setInt(1, id.intValue());
+            rs = ptmt.executeQuery();
             if (!rs.next())
                throw new FinderException("Couldn't find a record. Id = "+id);
            
@@ -179,30 +160,33 @@ public class PlacesBean implements EntityBean{
         return parentID;
     }
 
+    public Long ejbCreate() throws CreateException{
+    	return getId();
+    }
+    
+    public void ejbPostCreate() throws CreateException{
+    }
+    
     @Override
 	public void ejbActivate() throws EJBException, RemoteException {	
     	//id = (Integer) context.getPrimaryKey();
+    	 this.id = (Long)context.getPrimaryKey();
     }
 
 	@Override
 	public void ejbLoad() throws EJBException, RemoteException {
-        Place place = (Place)context.getPrimaryKey();
-        id = new Long(place.getId());
-        Connection con = null;
-        PreparedStatement prepStmt = null;
-        ResultSet rs = null;
+      
         try {
             con = getConnection();
-            prepStmt = con.prepareStatement("SELECT * FROM places where id_place=?");
-            prepStmt.setLong(1, id);
-            rs = prepStmt.executeQuery();
+            ptmt = con.prepareStatement("SELECT * FROM places where id_place=?");
+            ptmt.setLong(1, id);
+            rs = ptmt.executeQuery();
             if (!rs.next())
                throw new EJBException("Couldn't find a record. Id = "+id);
             id = rs.getLong("id_place");
             name = rs.getString("place_name");
             locationTypeID = rs.getInt("id_location_type");
             parentID = rs.getLong("id_parent");
-            //pl = new Place(id.intValue(),name,locationTypeID,parentID.intValue());
 
         } catch (SQLException e) {
             throw new EJBException("Couldn't execute query");
@@ -232,7 +216,7 @@ public class PlacesBean implements EntityBean{
 
     @Override
 	public void ejbPassivate() throws EJBException, RemoteException {	
-		//id = null;
+		id = null;
 	}
 
 	@Override

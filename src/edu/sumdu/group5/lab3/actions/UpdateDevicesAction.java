@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import edu.sumdu.group5.lab3.dao.BeanException;
 import edu.sumdu.group5.lab3.dao.DAO;
 import edu.sumdu.group5.lab3.dao.DAOFactory;
 import edu.sumdu.group5.lab3.dao.DaoException;
@@ -42,6 +43,7 @@ public class UpdateDevicesAction implements Action {
     
     /**
      * Constructor which gets(creates) instance of the DAO object
+     * @throws BeanException 
      */
     public UpdateDevicesAction() throws DaoException {
         jdbcDao = (JdbcDAO) new DAOFactory().newInstance("jdbcDAO");

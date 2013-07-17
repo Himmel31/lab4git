@@ -11,7 +11,7 @@ import java.util.List;
 import edu.sumdu.group5.lab3.dao.ConnectionFactory;
 import edu.sumdu.group5.lab3.model.Device;
 import edu.sumdu.group5.lab3.model.ModelException;
-import edu.sumdu.group5.lab3.model.Place;
+import edu.sumdu.group5.lab3.model.PlaceCl;
 import edu.sumdu.group5.lab3.model.PlaceUser;
 
 /**
@@ -132,8 +132,8 @@ public class JdbcDAO implements DAO {
         }
     }
 
-    public List<Place> findAllLocation() throws ModelException {
-        List<Place> places = new ArrayList<Place>();
+    public List<PlaceCl> findAllLocation() throws ModelException {
+        List<PlaceCl> places = new ArrayList<PlaceCl>();
         try {
             String querystring = "SELECT * FROM places";
             con = getConnection();
@@ -144,7 +144,7 @@ public class JdbcDAO implements DAO {
                 String placeName = rs.getString("place_name");
                 Integer locationTypeID = rs.getInt("id_location_type");
                 Integer parentID = rs.getInt("id_parent");
-                Place pl = new Place(id, placeName, locationTypeID, parentID);
+                PlaceCl pl = new PlaceCl(id, placeName, locationTypeID, parentID);
                 places.add(pl);
             }
         } catch (SQLException e) {
