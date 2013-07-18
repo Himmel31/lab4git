@@ -74,10 +74,10 @@ public class EjbDAO implements DAO {
             for (DevicesRemote dr : devRemote) {
                 Device d = new Device();
                 d.setDevName(dr.getDevName());
-                d.setDeviceTypeID(dr.getDeviceTypeID());
-                d.setId(dr.getId());
-                d.setParentID(dr.getParentID());
-                d.setPlaceID(dr.getPlaceID());
+                d.setDeviceTypeID(dr.getDeviceTypeID().intValue());
+                d.setId(dr.getId().intValue());
+                d.setParentID(dr.getParentID().intValue());
+                d.setPlaceID(dr.getPlaceID().intValue());
                 dev.add(d);
             }
         } catch (java.rmi.RemoteException e) {
@@ -178,7 +178,7 @@ public class EjbDAO implements DAO {
                     DevicesHome.class);
 
             return getDevicesListFromRemoteDevicesList(devicesH
-                    .findChildDevices(deviceId));
+                    .findChildDevices(new Long(deviceId)));
         } catch (NamingException e) {
             throw new BeanException(e);
         } catch (RemoteException e) {
@@ -200,7 +200,7 @@ public class EjbDAO implements DAO {
                     DevicesHome.class);
 
             return getDevicesListFromRemoteDevicesList(devicesH
-                    .findChildDevicesPorts(deviceId));
+                    .findChildDevicesPorts(new Long(deviceId)));
         } catch (NamingException e) {
             throw new BeanException(e);
         } catch (RemoteException e) {
@@ -222,7 +222,7 @@ public class EjbDAO implements DAO {
                     DevicesHome.class);
 
             return getDevicesListFromRemoteDevicesList(devicesH
-                    .findChildDevicesSlots(deviceId));
+                    .findChildDevicesSlots(new Long(deviceId)));
         } catch (NamingException e) {
             throw new BeanException(e);
         } catch (RemoteException e) {
@@ -234,55 +234,36 @@ public class EjbDAO implements DAO {
     }
 
     @Override
-    public Device getDeviceByID(int id) throws BeanException {
+    public Device getDeviceByID(int id) throws ModelException, BeanException, FinderException {
         try {
             if (in == null)
                 setInitialContext();
             Object obj = in.lookup("DevicesEJB");
             devicesH = (DevicesHome) PortableRemoteObject.narrow(obj,
                     DevicesHome.class);
-
-            return getDeviceFromDeviceRemote(devicesH
-                    .findByPrimaryKey(new Long(id)));
+            
+            return getDeviceFromDeviceRemote(devicesH.findByPrimaryKey(new Long(id)));
         } catch (NamingException e) {
             throw new BeanException(e);
         } catch (RemoteException e) {
             throw new BeanException(e);
-        } catch (FinderException e) {
-            new BeanException(e);
-        }
-        return null;
+        } 
+		
+        
     }
 
     private Device getDeviceFromDeviceRemote(DevicesRemote devRemote) throws BeanException {
-       try{
-        Device dev = new Device();
-        dev.setDeviceTypeID(devRemote.getDeviceTypeID());
-        dev.setDevName(devRemote.getDevName());
-        dev.setId(devRemote.getId());
-        dev.setParentID(devRemote.getParentID());
-        dev.setPlaceID(devRemote.getPlaceID());
-        return dev;
-       } catch(RemoteException e) {
+    	Device dev = new Device();
+        try{
+            dev.setDeviceTypeID(devRemote.getDeviceTypeID().intValue());
+            dev.setDevName(devRemote.getDevName());
+            dev.setId(devRemote.getId().intValue());
+            dev.setParentID(devRemote.getParentID().intValue());
+            dev.setPlaceID(devRemote.getPlaceID().intValue()); 
+        }catch(RemoteException e) {
             throw new BeanException(e);
         }
-    }
-    
-    @Override
-    public HashMap<Integer, String> getIdDevicesTypes() throws BeanException {
-        try {
-            if (in == null)
-                setInitialContext();
-            Object obj = in.lookup("DevicesEJB");
-            devicesH = (DevicesHome) PortableRemoteObject.narrow(obj,
-                    DevicesHome.class);
-
-            return devicesH.getIdDevicesTypes();
-        } catch (NamingException e) {
-            throw new BeanException(e);
-        } catch (RemoteException e) {
-            throw new BeanException(e);
-        }
+    	return dev;
     }
 
     @Override
@@ -293,15 +274,15 @@ public class EjbDAO implements DAO {
             Object obj = in.lookup("DevicesEJB");
             devicesH = (DevicesHome) PortableRemoteObject.narrow(obj,
                     DevicesHome.class);
-            devicesH.remove(deviceID);
-
+            devicesH.removeById(new Long(deviceID));
+            
         } catch (NamingException e) {
+            throw new BeanException(e);
+        } catch (FinderException e) {
             throw new BeanException(e);
         } catch (RemoteException e) {
             throw new BeanException(e);
-        } catch (RemoveException e) {
-            throw new BeanException(e);
-        } 
+        }
     }
 
     @Override
@@ -312,13 +293,15 @@ public class EjbDAO implements DAO {
             Object obj = in.lookup("DevicesEJB");
             devicesH = (DevicesHome) PortableRemoteObject.narrow(obj,
                     DevicesHome.class);
-            devicesH.update(ID, devicename);
+            devicesH.updateDevice(ID.longValue(), devicename);
 
         } catch (NamingException e) {
             throw new BeanException(e);
+        }  catch (FinderException e) {
+            throw new BeanException(e);
         } catch (RemoteException e) {
             throw new BeanException(e);
-        } 
+        }
     }
 
 }

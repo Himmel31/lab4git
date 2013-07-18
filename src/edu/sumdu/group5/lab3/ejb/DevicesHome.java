@@ -13,12 +13,12 @@ public interface DevicesHome extends EJBHome{
 
 	public DevicesRemote create(String devName, Long devTypeId, Long parentId, Long placeId) throws RemoteException, CreateException;
 	public DevicesRemote findByPrimaryKey(Long id) throws RemoteException, FinderException;
-	public void update (Integer IdDevice, String deviceName) throws RemoteException;
+	public void updateDevice (Long IdDevice, String deviceName) throws FinderException,RemoteException;
 	public Collection<DevicesRemote> findAllDevices() throws RemoteException, FinderException;
 	public Collection<DevicesRemote> findRootDevicesByPlaceID(Long id) throws RemoteException, FinderException;
-	public Collection<DevicesRemote> findChildDevices(int deviceId) throws RemoteException, FinderException;
-	public Collection<DevicesRemote> findChildDevicesSlots(int deviceId) throws RemoteException, FinderException;
-	public Collection<DevicesRemote> findChildDevicesPorts(int deviceId) throws RemoteException, FinderException;
-	public void remove(long id) throws RemoveException, RemoteException;
-	public HashMap<Integer, String> getIdDevicesTypes()throws RemoteException;
+	public Collection<DevicesRemote> findChildDevices(Long deviceId) throws RemoteException, FinderException;
+	public Collection<DevicesRemote> findChildDevicesSlots(Long deviceId) throws RemoteException, FinderException;
+	public Collection<DevicesRemote> findChildDevicesPorts(Long deviceId) throws RemoteException, FinderException;
+	public void removeById(Long id) throws FinderException,RemoteException;
+	
 }

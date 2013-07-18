@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.ejb.FinderException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -16,6 +17,7 @@ import edu.sumdu.group5.lab3.dao.DAO;
 import edu.sumdu.group5.lab3.dao.DAOFactory;
 import edu.sumdu.group5.lab3.dao.DaoException;
 import edu.sumdu.group5.lab3.dao.JdbcDAO;
+import edu.sumdu.group5.lab3.dao.EjbDAO;
 
 /**
  * @implements Action
@@ -33,7 +35,7 @@ public class ShowDevicesAction implements Action {
      * Constructor which gets(creates) instance of the DAO object
      */
     public ShowDevicesAction() throws DaoException {
-        jdbcDao = (JdbcDAO) new DAOFactory().newInstance("jdbcDAO");
+        jdbcDao = (EjbDAO) new DAOFactory().newInstance("ejbDAO");
     }
 
     /**
@@ -69,7 +71,11 @@ public class ShowDevicesAction implements Action {
         } catch (BeanException e) {
             request.getSession().setAttribute("errorMessage", e);
             return "/error.jsp";
-        }
+        }catch (FinderException e) {
+        	e.printStackTrace();
+        	//request.getSession().setAttribute("errorMessage", e);
+            //return "/error.jsp";
+		}
         
         return "/deviceList.jsp";
     }

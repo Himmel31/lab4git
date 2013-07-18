@@ -20,6 +20,7 @@ import edu.sumdu.group5.lab3.dao.JdbcDAO;
 import edu.sumdu.group5.lab3.model.Device;
 import edu.sumdu.group5.lab3.model.ModelException;
 import edu.sumdu.group5.lab3.actions.Action;
+import edu.sumdu.group5.lab3.dao.EjbDAO;
 
 /**
  * @implements Action
@@ -37,7 +38,7 @@ public class AddDeviceAction implements Action {
      * Constructor which gets(creates) instance of the DAO object
      */
     public AddDeviceAction() throws DaoException {
-        jdbcDao = (JdbcDAO) new DAOFactory().newInstance("jdbcDAO");
+        jdbcDao = (EjbDAO) new DAOFactory().newInstance("ejbDAO");
     }
 
     /**
@@ -106,7 +107,7 @@ public class AddDeviceAction implements Action {
      * @throws BeanException 
      */
     private Device createDevice(HttpServletRequest request) throws ModelException, BeanException {
-        HashMap<Integer, String> map = jdbcDao.getIdDevicesTypes();
+       // HashMap<Integer, String> map = jdbcDao.getIdDevicesTypes();
         HttpSession session = request.getSession(true);
         int placeID = Integer.valueOf(session.getAttribute("currentPlaceDevice").toString());
         int deviceTypeID = 0;
@@ -116,27 +117,27 @@ public class AddDeviceAction implements Action {
             String str = request.getParameter(TYPE).toString();
 
             if (str.equals("router")) {
-                parentID = 0;
-                for (Integer s : map.keySet()) {
-                    if (map.get(s).toLowerCase().equals(str.toLowerCase())) {
-                        deviceTypeID = s;
-                        break;
-                    }
-                }
+               // parentID = 0;
+               // for (Integer s : map.keySet()) {
+                //    if (map.get(s).toLowerCase().equals(str.toLowerCase())) {
+                        deviceTypeID = 1;
+               //         break;
+              //      }
+              //  }
             } else if (str.equals("slot")) {
-                for (Integer s : map.keySet()) {
-                    if (map.get(s).toLowerCase().equals(str.toLowerCase())) {
-                        deviceTypeID = s;
-                        break;
-                    }
-                }
+              //  for (Integer s : map.keySet()) {
+              //      if (map.get(s).toLowerCase().equals(str.toLowerCase())) {
+                        deviceTypeID = 2;
+              //          break;
+              //      }
+              //  }
             } else if (str.equals("port")) {
-                for (Integer s : map.keySet()) {
-                    if (map.get(s).toLowerCase().equals(str.toLowerCase())) {
-                        deviceTypeID = s;
-                        break;
-                    }
-                }
+              //  for (Integer s : map.keySet()) {
+               //     if (map.get(s).toLowerCase().equals(str.toLowerCase())) {
+                        deviceTypeID = 4;
+                //        break;
+                //    }
+               // }
             }
             Device device = new Device();
             device.setDevName(request.getParameter(DEVICENAME));
@@ -147,12 +148,12 @@ public class AddDeviceAction implements Action {
             return device;
         } else {
             parentID = new Integer(request.getParameter(PARENTID).toString());
-            for (Integer s : map.keySet()) {
-                if (map.get(s).toLowerCase().equals("card")) {
-                    deviceTypeID = s;
-                    break;
-                }
-            }
+            //for (Integer s : map.keySet()) {
+              //  if (map.get(s).toLowerCase().equals("card")) {
+                    deviceTypeID = 3;
+                //    break;
+               // }
+            //}
             Device device = new Device();
             device.setDevName(request.getParameter(DEVICENAME));
             device.setDeviceTypeID(deviceTypeID);

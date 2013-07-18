@@ -6,23 +6,23 @@ import javax.ejb.EJBObject;
 
 public interface DevicesRemote extends EJBObject{
 
-	public int getDeviceTypeID() throws RemoteException;
+	public Long getDeviceTypeID() throws RemoteException;
 
-    public void setDeviceTypeID(int deviceTypeID) throws RemoteException;
+    public void setDeviceTypeID(Long deviceTypeID) throws RemoteException;
 
-    public int getId() throws RemoteException;
+    public Long getId() throws RemoteException;
 
-    public void setId(int id) throws RemoteException;
+    public void setId(Long id) throws RemoteException;
 
     public String getDevName() throws RemoteException;
 
     public void setDevName(String devName) throws RemoteException;
 
-    public int getParentID() throws RemoteException;
+    public Long getParentID() throws RemoteException;
 
-    public void setParentID(int parentID) throws RemoteException;
+    public void setParentID(Long parentID) throws RemoteException;
 
-    public int getPlaceID() throws RemoteException;
+    public Long getPlaceID() throws RemoteException;
 
-    public void setPlaceID(int placeID) throws RemoteException;
+    public void setPlaceID(Long placeID) throws RemoteException;
 }

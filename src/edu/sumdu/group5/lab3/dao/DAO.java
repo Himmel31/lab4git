@@ -24,9 +24,7 @@ public interface DAO {
 
     public Collection<Device> getChildDevicesSlots(int deviceID) throws ModelException, BeanException;
 
-    public Device getDeviceByID(int id) throws ModelException, BeanException;
-
-    public HashMap<Integer, String> getIdDevicesTypes() throws ModelException, BeanException;
+    public Device getDeviceByID(int id) throws ModelException, BeanException, FinderException;
 
     public Collection getRootDevicesByPlaceID(int ID) throws ModelException, BeanException, FinderException;
 

@@ -16,6 +16,7 @@ import edu.sumdu.group5.lab3.dao.DaoException;
 import edu.sumdu.group5.lab3.dao.JdbcDAO;
 import edu.sumdu.group5.lab3.model.Device;
 import edu.sumdu.group5.lab3.model.ModelException;
+import edu.sumdu.group5.lab3.dao.EjbDAO;
 
 /**
  * @implements Action
@@ -34,7 +35,7 @@ public class RemoveDeviceAction implements Action {
      * Constructor which gets(creates) instance of the DAO object
      */
     public RemoveDeviceAction() throws DaoException {
-        jdbcDao = (JdbcDAO) new DAOFactory().newInstance("jdbcDAO");
+        jdbcDao = (EjbDAO) new DAOFactory().newInstance("ejbDAO");
     }
 
     /**
