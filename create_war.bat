@@ -8,6 +8,6 @@ xcopy /s /y classes build\WEB-INF\classes
 del build\WEB-INF\lib\servlet-api.jar /Q
 del build\WEB-INF\lib\jboss-j2ee.jar /Q
 
-jar cvfM build/lab3.war -C build\ .
+jar cvfM build/lab4.war -C build\ .
 rem jar -cmvf build\META-INF\MANIFEST.MF war\laba4.war -C build\ .
 @pause
