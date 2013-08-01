@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <%@ page import="java.util.*" %>
-<%@ page import="edu.sumdu.group5.lab3.model.*" %>
+<%@ page import="edu.sumdu.group5.lab4.model.*" %>
 <html>
 <head>
     <title>Location List</title>
@@ -28,7 +28,7 @@
 
 <span id="bread_crumb">
 <%
-	LinkedList<PlaceCl> navigatePlaceList = (LinkedList<PlaceCl>) session.getAttribute("navigatePlace");
+	LinkedList<Place> navigatePlaceList = (LinkedList<Place>) session.getAttribute("navigatePlace");
     if (navigatePlaceList == null) {
 %>
 <a href="index.perform">Ukraine</a>
@@ -39,8 +39,8 @@
 <a href="index.perform"> Ukraine</a>
 <%-- creating path string--%>
 <%
-	for (PlaceCl currPlace : navigatePlaceList) {
-        PlaceCl navigatePlace = currPlace;
+	for (Place currPlace : navigatePlaceList) {
+        Place navigatePlace = currPlace;
 %>
 &gt;
 <a href="index.perform?id=<%=navigatePlace.getId()%>"><%=navigatePlace.getName()%>
@@ -62,9 +62,9 @@
     <table style="border-button: 4px solid yellow;">
 	<%-- list of locations --%>
         <%
-        	TreeSet<PlaceCl> listPlace = (TreeSet<PlaceCl>) session.getAttribute("places");
-                    for (PlaceCl currPlace : listPlace) {
-        		PlaceCl place = currPlace;
+        	TreeSet<Place> listPlace = (TreeSet<Place>) session.getAttribute("places");
+                    for (Place currPlace : listPlace) {
+        		Place place = currPlace;
         %>
         <tr>
             <td width="10"><img src="location.ico" alt="Location icon"></td>

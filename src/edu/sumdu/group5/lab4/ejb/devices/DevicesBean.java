@@ -1,4 +1,4 @@
-package edu.sumdu.group5.lab4.ejb.devicesEjb;
+package edu.sumdu.group5.lab4.ejb.devices;
 
 import java.rmi.RemoteException;
 import java.sql.Connection;
@@ -14,8 +14,6 @@ import javax.ejb.EntityBean;
 import javax.ejb.EntityContext;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import edu.sumdu.group5.lab4.dao.ConnectionException;
@@ -41,7 +39,7 @@ public class DevicesBean implements EntityBean{
 	private Connection con=null;
 	private PreparedStatement ptmt = null;
     private ResultSet rs = null;
-    private EntityContext context;
+    private EntityContext context=null;
     private static DataSource ds = null;
 
     private final String dataSource ="DataSource";
@@ -67,7 +65,47 @@ public class DevicesBean implements EntityBean{
             log.debug("Method call");
         ConnectionFactory.closeConnection();
     }
-    
+
+    /**
+     *
+     *   id of type of the device
+     */
+    public void setDeviceTypeID(Long id) throws RemoteException{
+        deviceTypeID = id;
+    }
+
+    /**
+     *
+     *   id of device
+     */
+    public void setId(Long id) throws RemoteException{
+        this.id=id;
+    }
+
+    /**
+     *
+     *   name of device
+     */
+    public void setDevName(String str) throws RemoteException{
+        devName = str;
+    }
+
+    /**
+     *
+     *  parent id of device
+     */
+    public void setParentID(Long id) throws RemoteException{
+        parentID=id;
+    }
+
+    /**
+     *
+     *   id of location
+     */
+    public void setPlaceID(Long id) {
+        placeID = id;
+    }
+
     /**
      * 
      * @return  id of type of the device
@@ -117,17 +155,9 @@ public class DevicesBean implements EntityBean{
         if (log.isDebugEnabled())
             log.debug("Method call");
         if (ds==null){
-            InitialContext cxt = null;
-            try {
-                cxt = new InitialContext();
-            } catch (NamingException e) {
-                DaoException e1 = new DaoException("No context!");
-                 log.error("Exception", e1);
-                throw e1;
-            }
-            if ( cxt == null ) {
-                DaoException e1 = new DaoException("No context!");
-                 log.error("Exception", e1);
+            if(context == null){
+                DaoException e1 = new DaoException("DaoException");
+                log.error("Exception", e1);
                 throw e1;
             }
             ds = (DataSource) context.lookup("java:jdbc/MSSQLDS");
@@ -374,7 +404,7 @@ public class DevicesBean implements EntityBean{
     * @param id - id of the device to remove
     * @throws FinderException
     */
-	public void ejbHomeRemoveById(Long id) throws FinderException {
+	/*public void ejbHomeRemoveById(Long id) throws FinderException {
         if (log.isDebugEnabled())
             log.debug("Method call. Arguments: " + id);
 	    try {
@@ -410,7 +440,7 @@ public class DevicesBean implements EntityBean{
             }
         }
 		
-	}
+	}*/
 
 	@Override
 	/**
@@ -419,6 +449,41 @@ public class DevicesBean implements EntityBean{
      * @throws RemoteException
      */
 	public void ejbStore() throws EJBException, RemoteException {
+        if (log.isDebugEnabled())
+            log.debug("Method call. Arguments: " + getId() + " " + getDevName());
+        try {
+            String querystring = "UPDATE devices SET device_name=? WHERE id_device=?;";
+            con = getConnection(getDs());
+            ptmt = con.prepareStatement(querystring);
+            ptmt.setString(1, getDevName());
+            ptmt.setLong(2, getId());
+            ptmt.executeUpdate();
+
+        } catch (SQLException e) {
+            EJBException e1 = new EJBException("Can't update device, SQL exception");
+            log.error("Exception", e1);
+            throw e1;
+        } catch (DaoException e) {
+            EJBException e1 = new EJBException("Can't update device, DAO exception");
+            log.error("Exception", e1);
+            throw e1;
+        }finally {
+            try {
+                if (rs != null)
+                    rs.close();
+                if (ptmt != null)
+                    ptmt.close();
+                closeConnection();
+            } catch (SQLException e) {
+                EJBException e1 = new EJBException("Can't update device, SQL exception");
+                log.error("Exception", e1);
+                throw e1;
+            } catch (ConnectionException e) {
+                EJBException e1 = new EJBException("Can't update device, Connection exception");
+                log.error("Exception", e1);
+                throw e1;
+            }
+        }
 	}
 	
 	/**
@@ -613,50 +678,6 @@ public class DevicesBean implements EntityBean{
         return devices;
     }
 	
-	/**
-	 * update the specified device
-	 * @param IdDevice - id of the device
-	 * @param deviceName - name of the device
-     * @throws FinderException
-     */
-	public void ejbHomeUpdateDevice(Long IdDevice, String deviceName) throws FinderException  {
-	    if (log.isDebugEnabled())
-            log.debug("Method call. Arguments: " + IdDevice + " " + deviceName);
-        try {
-            String querystring = "UPDATE devices SET device_name=? WHERE id_device=?;";
-            con = getConnection(getDs());
-            ptmt = con.prepareStatement(querystring);
-            ptmt.setString(1, deviceName);
-            ptmt.setLong(2, IdDevice);
-            ptmt.executeUpdate();
-
-        } catch (SQLException e) {
-            FinderException e1 = new FinderException("Can't update device, SQL exception");
-            log.error("Exception", e1);
-            throw e1;
-        } catch (DaoException e) {
-            FinderException e1 = new FinderException("Can't update device, DAO exception");
-            log.error("Exception", e1);
-            throw e1;
-        }finally {
-            try {
-                if (rs != null)
-                    rs.close();
-                if (ptmt != null)
-                    ptmt.close();                
-                closeConnection();
-            } catch (SQLException e) {
-                FinderException e1 = new FinderException("Can't update device, SQL exception");
-                log.error("Exception", e1);
-                throw e1;
-            } catch (ConnectionException e) {
-                FinderException e1 = new FinderException("Can't update device, Connection exception");
-                log.error("Exception", e1);
-                throw e1;
-            }
-        }
-	}
-	
 	@Override
 	/**
      * 
@@ -746,12 +767,14 @@ public class DevicesBean implements EntityBean{
         if (log.isDebugEnabled())
             log.debug("Method call");
         try {
-            String querystring = "DELETE FROM devices WHERE id_device=";
+            String querystring = "DELETE FROM devices WHERE id_device=? or id_parent=?";
             con = getConnection(getDs());
             ptmt = con.prepareStatement(querystring);
-            ptmt.setString(1, id.toString());
+            ptmt.setString(1, String.valueOf(id));
+            ptmt.setString(2, String.valueOf(id));
             ptmt.executeUpdate();
         } catch (SQLException e) {
+            e.printStackTrace();
             RemoveException e1 = new RemoveException("Can't remove device, SQL exception");
             log.error("Exception", e1);
             throw e1;

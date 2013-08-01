@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import edu.sumdu.group5.lab4.actions.Action;
-import edu.sumdu.group5.lab4.model.ModelException;
 
 import org.apache.log4j.Logger;
 

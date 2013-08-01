@@ -2,7 +2,7 @@
 
     <servlet>
         <servlet-name>places</servlet-name>
-        <servlet-class>edu.sumdu.group5.lab3.coreservlets.DBServlet</servlet-class>
+        <servlet-class>edu.sumdu.group5.lab4.coreservlets.DBServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>places</servlet-name>
@@ -12,5 +12,12 @@
         <servlet-name>places</servlet-name>
         <url-pattern>*.perform</url-pattern>
     </servlet-mapping>
+    
+    <resource-ref>
+		<description>MSSQLDS Connection</description>
+		<res-ref-name>jdbc/MSSQLDS</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
 
 </web-app>

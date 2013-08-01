@@ -8,12 +8,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 
-import edu.sumdu.group5.lab4.dao.BeanException;
 import edu.sumdu.group5.lab4.dao.DAO;
 import edu.sumdu.group5.lab4.dao.DAOFactory;
 import edu.sumdu.group5.lab4.dao.DaoException;
 import edu.sumdu.group5.lab4.dao.EjbDAO;
-import edu.sumdu.group5.lab4.dao.JdbcDAO;
 import edu.sumdu.group5.lab4.model.Device;
 import edu.sumdu.group5.lab4.model.ModelException;
 import edu.sumdu.group5.lab4.model.Place;
@@ -115,10 +113,6 @@ public class BootstrapAction implements Action {
             log.error("Exception", e);
             return "/error.jsp";
         } catch (FinderException e) {
-            request.getSession().setAttribute("errorMessage", e);
-            log.error("Exception", e);
-            return "/error.jsp";
-        } catch (BeanException e) {
             request.getSession().setAttribute("errorMessage", e);
             log.error("Exception", e);
             return "/error.jsp";

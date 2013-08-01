@@ -1,4 +1,4 @@
-package edu.sumdu.group5.lab4.ejb.placesEjb;
+package edu.sumdu.group5.lab4.ejb.places;
 
 import java.rmi.RemoteException;
 import java.util.Collection;

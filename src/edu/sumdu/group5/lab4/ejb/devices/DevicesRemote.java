@@ -1,4 +1,4 @@
-package edu.sumdu.group5.lab4.ejb.devicesEjb;
+package edu.sumdu.group5.lab4.ejb.devices;
 
 import java.rmi.RemoteException;
 
@@ -40,4 +40,33 @@ public interface DevicesRemote extends EJBObject{
      */
     public Long getPlaceID() throws RemoteException;
 
+    /**
+     *
+     * @return  id of type of the device
+     */
+    public void setDeviceTypeID(Long id) throws RemoteException;
+
+    /**
+     *
+     * @return  id of device
+     */
+    public void setId(Long id) throws RemoteException;
+
+    /**
+     *
+     * @return  name of device
+     */
+    public void setDevName(String str) throws RemoteException;
+
+    /**
+     *
+     * @return parent id of device
+     */
+    public void setParentID(Long id) throws RemoteException;
+
+    /**
+     *
+     * @return place id of device
+     */
+    public void setPlaceID(Long id) throws RemoteException;
 }

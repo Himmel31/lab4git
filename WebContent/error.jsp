@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <%@ page import="java.util.*" %>
-<%@ page import="edu.sumdu.group5.lab3.model.*" %>
+<%@ page import="edu.sumdu.group5.lab4.model.*" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">

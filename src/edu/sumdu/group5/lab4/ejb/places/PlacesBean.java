@@ -1,4 +1,4 @@
-package edu.sumdu.group5.lab4.ejb.placesEjb;
+package edu.sumdu.group5.lab4.ejb.places;
 
 import java.rmi.RemoteException;
 import java.sql.Connection;
@@ -20,7 +20,6 @@ import javax.sql.DataSource;
 
 import edu.sumdu.group5.lab4.dao.ConnectionException;
 import edu.sumdu.group5.lab4.dao.ConnectionFactory;
-import edu.sumdu.group5.lab4.dao.DaoException;
 import edu.sumdu.group5.lab4.dao.DaoException;
 
 import org.apache.log4j.Logger;

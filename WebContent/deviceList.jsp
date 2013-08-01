@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <%@ page import="java.util.*" %>
-<%@ page import="edu.sumdu.group5.lab3.model.*" %>
-<%@ page import="edu.sumdu.group5.lab3.actions.UpdateDevicesAction" %>
+<%@ page import="edu.sumdu.group5.lab4.model.*" %>
+<%@ page import="edu.sumdu.group5.lab4.actions.UpdateDevicesAction" %>
 <html>
 <head>
 
@@ -30,7 +30,7 @@
 
 <span id="bread_crumb">
 <%
-	LinkedList<PlaceCl> navigatePlaceList = (LinkedList<PlaceCl>) session.getAttribute("navigatePlace");
+	LinkedList<Place> navigatePlaceList = (LinkedList<Place>) session.getAttribute("navigatePlace");
     if (navigatePlaceList == null) {
 %>
 <a href="index.perform">Ukraine</a>
@@ -42,8 +42,8 @@
 <%-- creating path string--%>
 <%
 	int flag = 0; //add device to path string
-	for (PlaceCl currPlace : navigatePlaceList){
-		PlaceCl navigatePlace = currPlace;
+	for (Place currPlace : navigatePlaceList){
+		Place navigatePlace = currPlace;
 		flag++;
 %>
 &gt;

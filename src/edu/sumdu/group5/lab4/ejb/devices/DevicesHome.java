@@ -1,4 +1,4 @@
-package edu.sumdu.group5.lab4.ejb.devicesEjb;
+package edu.sumdu.group5.lab4.ejb.devices;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -33,15 +33,6 @@ public interface DevicesHome extends EJBHome{
      * @throws FinderException
      */
 	public DevicesRemote findByPrimaryKey(Long id) throws RemoteException, FinderException;
-	
-	/**
-	 * update the specified device
-	 * @param deviceId - id of the device
-	 * @param deviceName - name of the device
-     * @throws FinderException
-     * @throws RemoteException
-     */
-	public void updateDevice (Long IdDevice, String deviceName) throws FinderException,RemoteException;
 	
 	/**
      * @return collection of remote interfaces
@@ -85,13 +76,5 @@ public interface DevicesHome extends EJBHome{
      * @throws RemoteException
      */
 	public Collection<DevicesRemote> findChildDevicesPorts(Long deviceId) throws RemoteException, FinderException;
-	
-	/**
-     * 
-     * @param id - id of the device
-     * @throws FinderException
-     * @throws RemoteException
-     */
-	public void removeById(Long id) throws FinderException,RemoteException;
 	
 }

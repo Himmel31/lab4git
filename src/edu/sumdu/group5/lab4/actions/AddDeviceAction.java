@@ -3,7 +3,6 @@ package edu.sumdu.group5.lab4.actions;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -13,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import edu.sumdu.group5.lab4.actions.Action;
-import edu.sumdu.group5.lab4.dao.BeanException;
 import edu.sumdu.group5.lab4.dao.DAO;
 import edu.sumdu.group5.lab4.dao.DAOFactory;
 import edu.sumdu.group5.lab4.dao.DaoException;
@@ -90,11 +88,7 @@ public class AddDeviceAction implements Action {
             log.error("Exception", e);
             request.getSession().setAttribute("errorMessage", e);
             return "/error.jsp";
-        } catch (BeanException e) {
-            log.error("Exception", e);
-            request.getSession().setAttribute("errorMessage", e);
-            return "/error.jsp";
-        } catch (FinderException e) {
+        }  catch (FinderException e) {
             log.error("Exception", e);
             request.getSession().setAttribute("errorMessage", e);
             return "/error.jsp";
@@ -105,9 +99,9 @@ public class AddDeviceAction implements Action {
      * Adds new object of the Device type
      *
      * @return created device is returning
-     * @throws BeanException 
+     * @throws ModelException
      */
-    private Device createDevice(HttpServletRequest request) throws ModelException, BeanException {
+    private Device createDevice(HttpServletRequest request) throws ModelException {
         if (log.isDebugEnabled())
             log.debug("Method call. Arguments: " + request.getParameter(TYPE).toString());        
         HttpSession session = request.getSession(true);
@@ -149,9 +143,9 @@ public class AddDeviceAction implements Action {
      * Gets list of cards based on the list of slots, in which this cards inserted
      *
      * @return list of cards
-     * @throws BeanException 
+     * @throws ModelException
      */
-    private List<Device> getListCards(List<Device> listSlots) throws ModelException, BeanException {
+    private List<Device> getListCards(List<Device> listSlots) throws ModelException {
         if (log.isDebugEnabled())
             log.debug("Method call");
         List<Device> listCards = new ArrayList<Device>();

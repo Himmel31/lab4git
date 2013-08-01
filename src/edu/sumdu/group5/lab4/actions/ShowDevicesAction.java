@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import edu.sumdu.group5.lab4.dao.BeanException;
 import edu.sumdu.group5.lab4.dao.DAO;
 import edu.sumdu.group5.lab4.dao.DAOFactory;
 import edu.sumdu.group5.lab4.dao.DaoException;
@@ -79,11 +78,7 @@ public class ShowDevicesAction implements Action {
             log.error("Exception", e);
             request.getSession().setAttribute("errorMessage", e);
             return "/error.jsp";
-        } catch (BeanException e) {
-            log.error("Exception", e);
-            request.getSession().setAttribute("errorMessage", e);
-            return "/error.jsp";
-        }catch (FinderException e) {
+        } catch (FinderException e) {
             log.error("Exception", e);
         	request.getSession().setAttribute("errorMessage", e);
             return "/error.jsp";
@@ -96,9 +91,9 @@ public class ShowDevicesAction implements Action {
      * Gets list of cards based on the list of slots, in which this cards inserted
      *
      * @return list of cards
-     * @throws BeanException 
+     * @throws ModelException
      */
-    private List<Device> getListCards(List<Device> listSlots) throws ModelException, BeanException {
+    private List<Device> getListCards(List<Device> listSlots) throws ModelException {
         if (log.isDebugEnabled())
             log.debug("Method call");
         List<Device> listCards = new ArrayList<Device>();

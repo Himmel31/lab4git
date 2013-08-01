@@ -1,9 +1,6 @@
 package edu.sumdu.group5.lab4.dao;
 
 import javax.sql.DataSource;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.ejb.EntityContext;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -76,9 +73,9 @@ public class ConnectionFactory {
     public static Connection getConnectionDS(DataSource ds) throws DaoException {
         if (log.isDebugEnabled())
             log.debug("Method call");
-        System.out.println("In getDsConnCF");
+
         if (conn == null) {
-            System.out.println("In getDsConn in IF");
+
             try {
                 conn = ds.getConnection();
             } catch (SQLException e) {
@@ -137,7 +134,7 @@ public class ConnectionFactory {
                 log.error("Exception", e1);
                 throw e1;
             }
-            System.out.println("Closed!!!!");
+
         } 
     }
 

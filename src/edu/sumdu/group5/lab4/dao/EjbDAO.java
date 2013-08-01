@@ -5,15 +5,16 @@ import java.util.*;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.rmi.PortableRemoteObject;
 
-import edu.sumdu.group5.lab4.ejb.devicesEjb.DevicesHome;
-import edu.sumdu.group5.lab4.ejb.devicesEjb.DevicesRemote;
-import edu.sumdu.group5.lab4.ejb.placesEjb.PlacesHome;
-import edu.sumdu.group5.lab4.ejb.placesEjb.PlacesRemote;
+import edu.sumdu.group5.lab4.ejb.devices.DevicesHome;
+import edu.sumdu.group5.lab4.ejb.devices.DevicesRemote;
+import edu.sumdu.group5.lab4.ejb.places.PlacesHome;
+import edu.sumdu.group5.lab4.ejb.places.PlacesRemote;
 import edu.sumdu.group5.lab4.model.Device;
 import edu.sumdu.group5.lab4.model.ModelException;
 import edu.sumdu.group5.lab4.model.Place;
@@ -49,7 +50,7 @@ public class EjbDAO implements DAO {
 
     @Override
     public Collection<Device> getRootDevicesByPlaceID(int id)
-            throws BeanException, FinderException {
+            throws ModelException, FinderException {
         if (log.isDebugEnabled())
             log.debug("Method call. Arguments: " + id);
         try {
@@ -63,18 +64,18 @@ public class EjbDAO implements DAO {
                     .findRootDevicesByPlaceID(new Long(id)));
 
         } catch (NamingException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         } catch (RemoteException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         }
     }
 
     private Collection<Device> getDevicesListFromRemoteDevicesList(
-            Collection<DevicesRemote> devRemote) throws BeanException {
+            Collection<DevicesRemote> devRemote) throws ModelException {
         if (log.isDebugEnabled())
         log.debug("Method call");
         Collection<Device> dev = new LinkedList();
@@ -89,7 +90,7 @@ public class EjbDAO implements DAO {
                 dev.add(d);
             }
         } catch (RemoteException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         }
@@ -97,7 +98,7 @@ public class EjbDAO implements DAO {
     }
 
     @Override
-    public void add(Device device) throws ModelException, BeanException {
+    public void add(Device device) throws ModelException {
         if (log.isDebugEnabled())
             log.debug("Method call. Arguments: " + device);
         try {
@@ -110,15 +111,15 @@ public class EjbDAO implements DAO {
                     new Long(device.getParentID()), new Long(device.getPlaceID()));
 
         } catch (NamingException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         } catch (RemoteException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         } catch (CreateException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         }
@@ -126,7 +127,7 @@ public class EjbDAO implements DAO {
     
     @Override
     public Collection<Place> findAllLocation() throws ModelException,
-            FinderException, BeanException {
+            FinderException, ModelException {
         if (log.isDebugEnabled())
             log.debug("Method call");
         try {
@@ -139,18 +140,18 @@ public class EjbDAO implements DAO {
             return getLocationList(placesH.findAllLocation());
 
         } catch (NamingException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         } catch (RemoteException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         }
     }
 
     private Collection<Place> getLocationList(
-            Collection<PlacesRemote> plRemote) throws BeanException {
+            Collection<PlacesRemote> plRemote) throws ModelException {
         if (log.isDebugEnabled())
             log.debug("Method call");
         Collection<Place> res = new LinkedList();
@@ -165,7 +166,7 @@ public class EjbDAO implements DAO {
                 res.add(p);
             }
         } catch (java.rmi.RemoteException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         }
@@ -173,7 +174,7 @@ public class EjbDAO implements DAO {
     }
 
     @Override
-    public Collection<Device> getAllDevice() throws BeanException {
+    public Collection<Device> getAllDevice() throws ModelException {
         if (log.isDebugEnabled())
             log.debug("Method call");
         try {
@@ -187,22 +188,22 @@ public class EjbDAO implements DAO {
                     .findAllDevices());
 
         } catch (NamingException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         } catch (RemoteException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         } catch (FinderException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         }
     }
 
     @Override
-    public Collection<Device> getChildDevices(int deviceId) throws BeanException {
+    public Collection<Device> getChildDevices(int deviceId) throws ModelException {
         if (log.isDebugEnabled())
             log.debug("Method call. Arguments: " + deviceId);
         try {
@@ -214,15 +215,15 @@ public class EjbDAO implements DAO {
             return getDevicesListFromRemoteDevicesList(devicesH
                     .findChildDevices(new Long(deviceId)));
         } catch (NamingException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         } catch (RemoteException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         } catch (FinderException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         }
@@ -230,7 +231,7 @@ public class EjbDAO implements DAO {
 
     @Override
     public Collection<Device> getChildDevicesPorts(int deviceId)
-            throws BeanException {
+            throws ModelException {
         if (log.isDebugEnabled())
             log.debug("Method call. Arguments: " + deviceId);
         try {
@@ -243,15 +244,15 @@ public class EjbDAO implements DAO {
             return getDevicesListFromRemoteDevicesList(devicesH
                     .findChildDevicesPorts(new Long(deviceId)));
         } catch (NamingException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         } catch (RemoteException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         } catch (FinderException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         }
@@ -259,7 +260,7 @@ public class EjbDAO implements DAO {
 
     @Override
     public Collection<Device> getChildDevicesSlots(int deviceId)
-            throws BeanException {
+            throws ModelException {
         if (log.isDebugEnabled())
             log.debug("Method call. Arguments: " + deviceId);
         try {
@@ -272,22 +273,22 @@ public class EjbDAO implements DAO {
             return getDevicesListFromRemoteDevicesList(devicesH
                     .findChildDevicesSlots(new Long(deviceId)));
         } catch (NamingException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         } catch (RemoteException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         } catch (FinderException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         }
     }
 
     @Override
-    public Device getDeviceByID(int id) throws ModelException, BeanException, FinderException {
+    public Device getDeviceByID(int id) throws ModelException, ModelException, FinderException {
         if (log.isDebugEnabled())
             log.debug("Method call. Arguments: " + id);
         try {
@@ -299,18 +300,18 @@ public class EjbDAO implements DAO {
             
             return getDeviceFromDeviceRemote(devicesH.findByPrimaryKey(new Long(id)));
         } catch (NamingException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         } catch (RemoteException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         }		
         
     }
 
-    private Device getDeviceFromDeviceRemote(DevicesRemote devRemote) throws BeanException {
+    private Device getDeviceFromDeviceRemote(DevicesRemote devRemote) throws ModelException {
         if (log.isDebugEnabled())
             log.debug("Method call");
     	Device dev = new Device();
@@ -321,7 +322,7 @@ public class EjbDAO implements DAO {
             dev.setParentID(devRemote.getParentID().intValue());
             dev.setPlaceID(devRemote.getPlaceID().intValue()); 
         }catch(RemoteException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         }
@@ -329,7 +330,7 @@ public class EjbDAO implements DAO {
     }
 
     @Override
-    public void removeDevice(int deviceID) throws BeanException {
+    public void removeDevice(int deviceID) throws ModelException {
         if (log.isDebugEnabled())
             log.debug("Method call. Arguments: " + deviceID);
         try {
@@ -338,45 +339,50 @@ public class EjbDAO implements DAO {
             Object obj = in.lookup("DevicesEJB");
             devicesH = (DevicesHome) PortableRemoteObject.narrow(obj,
                     DevicesHome.class);
-            devicesH.removeById(new Long(deviceID));
+            DevicesRemote rem = (DevicesRemote) devicesH.findByPrimaryKey(Long.valueOf(deviceID));
+            rem.remove();
+            //devicesH.removeById(new Long(deviceID));
             
         } catch (NamingException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         } catch (RemoteException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         } catch (FinderException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
+        } catch (RemoveException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
 
     @Override
-    public void update(Integer ID, String deviceName) throws BeanException {
+    public void update(Integer id, String deviceName) throws ModelException {
         if (log.isDebugEnabled())
-            log.debug("Method call. Arguments: " + ID + " " + deviceName);
+            log.debug("Method call. Arguments: " + id + " " + deviceName);
         try {
             if (in == null)
                 setInitialContext();
             Object obj = in.lookup("DevicesEJB");
             devicesH = (DevicesHome) PortableRemoteObject.narrow(obj,
                     DevicesHome.class);
-            devicesH.updateDevice(ID.longValue(), deviceName);
+            DevicesRemote rem = (DevicesRemote) devicesH.findByPrimaryKey(Long.valueOf(id));
+            rem.setDevName(deviceName);
 
         } catch (NamingException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         } catch (RemoteException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         } catch (FinderException e) {
-            BeanException e1 = new BeanException(e);
+            ModelException e1 = new ModelException(e);
             log.error("Exception", e1);
             throw e1;
         }
